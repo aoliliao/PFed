@@ -2,7 +2,6 @@ import time
 
 from threading import Thread
 
-from algorithms.client.clientFed import clientFedours
 from algorithms.client.clientFed16 import clientFedours16
 from algorithms.client.clientFed2 import clientFedours2
 from algorithms.client.clientFedavg import clientFedavg

@@ -7,7 +7,6 @@ import torch
 from sklearn import metrics
 from sklearn.preprocessing import label_binarize
 
-from algorithms.client.clientFed import clientFedours
 from algorithms.client.clientFed2 import clientFedours2
 from algorithms.client.clientFedavg import clientFedavg
 from algorithms.server.server import Server
@@ -112,9 +111,9 @@ class FedOurs2(Server):
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-        for client in self.selected_clients:
-            client.report_process_client(domain=client.data_name, algorithm=self.algorithm, test_acc=client.test_acc,
-                                         test_loss=client.test_loss, comment=self.comment)
+        # for client in self.selected_clients:
+        #     client.report_process_client(domain=client.data_name, algorithm=self.algorithm, test_acc=client.test_acc,
+        #                                  test_loss=client.test_loss, comment=self.comment)
         print("\nBest global accuracy.")
         print(max(self.rs_test_acc))
         print("\nAverage time cost per round.")

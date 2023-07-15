@@ -13,9 +13,6 @@ import logging
 
 from torch import nn
 
-from algorithms.server.serverFed13 import FedOurs13
-from algorithms.server.serverFed14 import FedOurs14
-from algorithms.server.serverFed15 import FedOurs15
 from algorithms.server.serverFed16 import FedOurs16
 from algorithms.server.serverFedCP import FedCP
 from algorithms.server.serverFedNH import FedNH
@@ -23,34 +20,15 @@ from algorithms.server.serverFedRod import FedRod
 from models.Fed15Model import AlexNetFed15
 from util.result_util import set_fixed_seed
 
-from algorithms.client.clientFed7 import DNN_gate
-from algorithms.server.serverFed import FedOurs
 # from algorithms.server.serverFed1 import FedOursNet
-from algorithms.server.serverFed1 import FedOursNet
-from algorithms.server.serverFed10 import FedOursNet10
-from algorithms.server.serverFed11 import FedOursNet11
-from algorithms.server.serverFed12 import FedOurs12
-from algorithms.server.serverFed2 import FedOurs2
-from algorithms.server.serverFed3 import FedOurs3
-from algorithms.server.serverFed4 import FedOursNet4
-from algorithms.server.serverFed5 import FedOurs5
-from algorithms.server.serverFed6 import FedOursNet6
-from algorithms.server.serverFed7 import FedOursNet7
-from algorithms.server.serverFed8 import FedOursNet8
-from algorithms.server.serverFed9 import FedOurs9
 from algorithms.server.serverFedBABU import FedBABU
 from algorithms.server.serverFedFA import FedFA
-from algorithms.server.serverFedKL import FedOursKL
-from algorithms.server.serverFedKL1 import FedOursKL1
-from algorithms.server.serverFedKL2 import FedOursKL2
 from algorithms.server.serverFedNoPer import FedOursNo
-from algorithms.server.serverFedRe import FedOursRe
 from algorithms.server.serverFedRep import FedRep
 from algorithms.server.serverFedavg import FedAvg
 from algorithms.server.serverFedbn import FedBN
 # from algorithms.server.serverFedrod import FedROD
 from algorithms.server.serverLocal import FedLocal
-from algorithms.server.serverMMD import FedOursMMD
 from models.AlexNetFA import AlexNetFedFa
 from models.LeNet import LeNet, DigitModel, AlexNet, AlexNet1, gate_DNN, AlexNetNH
 from models.ResNet import resnet18
@@ -106,11 +84,6 @@ def run(args):
         # select algorithm
         if args.algorithm == "FedAvg":
             server = FedAvg(args, i)
-        # elif args.algorithm == "FedROD":
-        #     head = copy.deepcopy(args.model.fc)
-        #     args.model.fc = nn.Identity()
-        #     args.model = LocalModel(args.model, head)
-        #     server = FedROD(args, i)
         elif args.algorithm == "FedBN":
             server = FedBN(args, i)
         elif args.algorithm == "FedFA":
@@ -130,22 +103,6 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = LocalModel(args.model, args.head)
             server = FedCP(args, i)
-        elif args.algorithm == "Fed":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOurs(args, i)
-        elif args.algorithm == "Fed1_1":
-            args.model = AlexNet1().to(args.device)
-            model_base = copy.deepcopy(args.model.features)
-            args.head = copy.deepcopy(args.model.classifier)
-            args.model.features = nn.Identity()
-            args.model.classifier = nn.Identity()
-            args.model = ClientOurModel(model_base, args.model, args.head)
-            print(args.model)
-            server = FedOurs5(args, i)
         elif args.algorithm == "FedBABU":
             # args.model = AlexNet1().to(args.device)
             head = copy.deepcopy(args.model.fc)
@@ -158,151 +115,14 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = LocalModel(args.model, args.head)
             server = FedRod(args, i)
-        elif args.algorithm == "FedRe":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursRe(args, i)
-        elif args.algorithm == "FedNet":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet(args, i)
         elif args.algorithm == "FedLocal":
             args.model = AlexNetFed15().to(args.device)
             server = FedLocal(args, i)
-        elif args.algorithm == "Fed2":
-            # args.model = AlexNet1().to(args.device)
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOurs2(args, i)
-        elif args.algorithm == "Fed3":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOurs3(args, i)
-        elif args.algorithm == "FedNet4":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet4(args, i)
-        elif args.algorithm == "Fed5":
-            g_fea = copy.deepcopy(args.model.gfc)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.gfc = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOurs5(args, i)
-        elif args.algorithm == "FedNet6":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet6(args, i)
-        elif args.algorithm == "FedNet7":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet7(args, i)
         elif args.algorithm == "FedNo":
             head = copy.deepcopy(args.model.fc)
             args.model.fc = nn.Identity()
             args.model = LocalModel(args.model, head)
             server = FedOursNo(args, i)
-        elif args.algorithm == "FedNet8":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet8(args, i)
-        elif args.algorithm == "Fed9":
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOurs9(args, i)
-            # g_fea = copy.deepcopy(args.model.fc1)
-            # args.head = copy.deepcopy(args.model.fc)
-            # args.model.fc1 = nn.Identity()
-            # args.model.fc = nn.Identity()
-            # args.model = ClientOurModel(args.model, g_fea, args.head)
-            # server = FedOurs9(args, i)
-        elif args.algorithm == "FedKL":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursKL(args, i)
-        elif args.algorithm == "FedKL1":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursKL1(args, i)
-        elif args.algorithm == "FedKL2":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursKL2(args, i)
-        elif args.algorithm == "FedMMD":
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOursMMD(args, i)
-        elif args.algorithm == "FedNet10":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            args.model = ClientOurModel(args.model, g_fea, args.head)
-            server = FedOursNet10(args, i)
-        elif args.algorithm == "FedNet11":
-            g_fea = copy.deepcopy(args.model.fc1)
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc1 = nn.Identity()
-            args.model.fc = nn.Identity()
-            # gate = gate_DNN(args.head.in_features * 2, 2, device=args.device)
-            gate = DNN_gate(args.head.in_features * 2, args.head.in_features, device=args.device)
-            args.model = ClientGateModel(args.model, g_fea, args.head, gate)
-            server = FedOursNet11(args, i)
-        elif args.algorithm == "Fed12":
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOurs12(args, i)
-        elif args.algorithm == "Fed13":
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOurs13(args, i)
-        elif args.algorithm == "Fed14":
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            server = FedOurs14(args, i)
-        elif args.algorithm == "Fed15":
-            args.model = AlexNetFed15().to(args.device)
-            head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = LocalModel(args.model, head)
-            print(args.model)
-            server = FedOurs15(args, i)
         elif args.algorithm == "Fed16":
             # args.model = AlexNet1().to(args.device)
             head = copy.deepcopy(args.model.fc)
@@ -337,8 +157,6 @@ if __name__ == "__main__":
 
     args = args_parser()
 
-
-
     os.environ["CUDA_VISIBLE_DEVICES"] = args.device_id
 
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -366,6 +184,4 @@ if __name__ == "__main__":
         print("Cuda device id: {}".format(os.environ["CUDA_VISIBLE_DEVICES"]))
     print("=" * 50)
 
-
     run(args)
-
