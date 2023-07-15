@@ -88,10 +88,10 @@ class clientFedours2(Client):
                 loss.backward()
                 self.optimizer.step()
 
-            test_acc, test_num, auc, loss = self.test_metrics()
-            print('name:', self.data_name, 'after_g_acc:', test_acc/test_num)
-            self.model.train()
-            self.p_fea.train()
+            # test_acc, test_num, auc, loss = self.test_metrics()
+            # print('name:', self.data_name, 'after_g_acc:', test_acc/test_num)
+            # self.model.train()
+            # self.p_fea.train()
 
             for param in self.model.parameters():
                 param.requires_grad = False
@@ -120,11 +120,11 @@ class clientFedours2(Client):
                 loss.backward()
                 self.opt_pfea.step()
 
-            test_acc, test_num, auc, loss = self.test_metrics()
-            print('name:', self.data_name, 'acc:', test_acc / test_num)
-
-            self.model.train()
-            self.p_fea.train()
+            # test_acc, test_num, auc, loss = self.test_metrics()
+            # print('name:', self.data_name, 'acc:', test_acc / test_num)
+            #
+            # self.model.train()
+            # self.p_fea.train()
         self.train_time_cost['num_rounds'] += 1
         self.train_time_cost['total_cost'] += time.time() - start_time
 
